@@ -1,0 +1,338 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>handlers: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">calculator-backend/handlers/binary.go (100.0%)</option>
+				
+				<option value="file1">calculator-backend/handlers/health.go (100.0%)</option>
+				
+				<option value="file2">calculator-backend/handlers/middleware.go (100.0%)</option>
+				
+				<option value="file3">calculator-backend/handlers/unary.go (100.0%)</option>
+				
+				<option value="file4">calculator-backend/main.go (0.0%)</option>
+				
+				<option value="file5">calculator-backend/pkg/calculator/calculator.go (100.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package handlers
+
+import (
+        "encoding/json"
+        "net/http"
+        "strconv"
+
+        "calculator-backend/pkg/calculator"
+)
+
+// Result is exported for reuse
+type Result struct {
+        Result float64 `json:"result"`
+        Error  string  `json:"error,omitempty"`
+}
+
+// BinaryOpHandler handles any binary operation
+func BinaryOpHandler(w http.ResponseWriter, r *http.Request, op string) <span class="cov8" title="1">{
+        if r.Method != http.MethodGet </span><span class="cov8" title="1">{
+                sendJSONResponse(w, http.StatusMethodNotAllowed, Result{Error: "method not allowed"})
+                return
+        }</span>
+
+        <span class="cov8" title="1">operand1Str := r.URL.Query().Get("operand1")
+        operand2Str := r.URL.Query().Get("operand2")
+
+        operand1, err := strconv.ParseFloat(operand1Str, 64)
+        if err != nil </span><span class="cov8" title="1">{
+                sendJSONResponse(w, http.StatusBadRequest, Result{Error: "invalid parameter 'operand1'"})
+                return
+        }</span>
+        <span class="cov8" title="1">operand2, err := strconv.ParseFloat(operand2Str, 64)
+        if err != nil </span><span class="cov8" title="1">{
+                sendJSONResponse(w, http.StatusBadRequest, Result{Error: "invalid parameter 'operand2'"})
+                return
+        }</span>
+
+        <span class="cov8" title="1">result, calcErr := calculator.Calculate(op, operand1, operand2)
+        if calcErr != nil </span><span class="cov8" title="1">{
+                sendJSONResponse(w, http.StatusBadRequest, Result{Error: calcErr.Error()})
+                return
+        }</span>
+
+        <span class="cov8" title="1">sendJSONResponse(w, http.StatusOK, Result{Result: result})</span>
+}
+
+// Individual handler functions (curried)
+func AddHandler(w http.ResponseWriter, r *http.Request)      <span class="cov8" title="1">{ BinaryOpHandler(w, r, "add") }</span>
+func SubtractHandler(w http.ResponseWriter, r *http.Request) <span class="cov8" title="1">{ BinaryOpHandler(w, r, "subtract") }</span>
+func MultiplyHandler(w http.ResponseWriter, r *http.Request) <span class="cov8" title="1">{ BinaryOpHandler(w, r, "multiply") }</span>
+func DivideHandler(w http.ResponseWriter, r *http.Request)   <span class="cov8" title="1">{ BinaryOpHandler(w, r, "divide") }</span>
+func PowHandler(w http.ResponseWriter, r *http.Request)      <span class="cov8" title="1">{ BinaryOpHandler(w, r, "pow") }</span>
+func PercentHandler(w http.ResponseWriter, r *http.Request)  <span class="cov8" title="1">{ BinaryOpHandler(w, r, "percent") }</span>
+
+func sendJSONResponse(w http.ResponseWriter, status int, data interface{}) <span class="cov8" title="1">{
+        w.Header().Set("Content-Type", "application/json")
+        w.WriteHeader(status)
+        json.NewEncoder(w).Encode(data)
+}</span>
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package handlers
+
+import "net/http"
+
+func HealthHandler(w http.ResponseWriter, r *http.Request) <span class="cov8" title="1">{
+        sendJSONResponse(w, http.StatusOK, map[string]string{"status": "ok"})
+}</span>
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package handlers
+
+import (
+        "log"
+        "net/http"
+        "os"
+)
+
+// CORSMiddleware adds CORS headers to every respons<span class="cov8" title="1">e
+func CORSMiddleware(next http.Handler) http.Handler {
+</span>        return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+                w.Header().Set("Access-Control-All</span><span class="cov8" title="1">ow-Origin", "*")
+                if r.Method == http.MethodOptions {
+                        w.WriteHeader(http.StatusNoContent)
+                        </span>return
+                <span class="cov8" title="1">}
+</span>                next.ServeHTTP(w, r)
+        })
+}
+
+// LoggingMiddleware logs each incoming request only wh<span class="cov8" title="1">en the DEBUG env var is "true"
+func LoggingMiddleware(next http.Handler) http.Handler {
+</span>        return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+                if os.Getenv("DEBUG") == "true" {
+                </span>        log.Printf("%s %s", r.Method, r.URL.Path)
+                }
+                next.ServeHTTP(w, r)
+        })
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package handlers
+
+import (
+        "net/http"
+        "strconv"
+
+        "calculator-backend/pkg/calculator"
+)
+
+func SqrtHandler(w http.ResponseWriter, r *http.Request) <span class="cov8" title="1">{
+        if r.Method != http.MethodGet </span><span class="cov8" title="1">{
+                sendJSONResponse(w, http.StatusMethodNotAllowed, Result{Error: "method not allowed"})
+                return
+        }</span>
+
+        <span class="cov8" title="1">operand1Str := r.URL.Query().Get("operand1")
+        operand1, err := strconv.ParseFloat(operand1Str, 64)
+        if err != nil </span><span class="cov8" title="1">{
+                sendJSONResponse(w, http.StatusBadRequest, Result{Error: "invalid parameter 'operand1'"})
+                return
+        }</span>
+
+        <span class="cov8" title="1">result, calcErr := calculator.Calculate("sqrt", operand1, 0) // second operand ignored
+        if calcErr != nil </span><span class="cov8" title="1">{
+                sendJSONResponse(w, http.StatusBadRequest, Result{Error: calcErr.Error()})
+                return
+        }</span>
+
+        <span class="cov8" title="1">sendJSONResponse(w, http.StatusOK, Result{Result: result})</span>
+}
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package main
+
+import (
+        "log"
+        "net/http"
+
+        "calculator-backend/handlers"
+)
+
+func main() <span class="cov0" title="0">{
+        v1 := http.NewServeMux()
+
+        // Health check
+        v1.HandleFunc("/health", handlers.HealthHandler)
+
+        // Binary operations
+        v1.HandleFunc("/add", handlers.AddHandler)
+        v1.HandleFunc("/subtract", handlers.SubtractHandler)
+        v1.HandleFunc("/multiply", handlers.MultiplyHandler)
+        v1.HandleFunc("/divide", handlers.DivideHandler)
+        v1.HandleFunc("/pow", handlers.PowHandler)
+        v1.HandleFunc("/percent", handlers.PercentHandler)
+
+        // Unary operation
+        v1.HandleFunc("/sqrt", handlers.SqrtHandler)
+
+        // Mount the v1 router under /api/v1/
+        wrapper := handlers.LoggingMiddleware(handlers.CORSMiddleware(v1))
+
+        http.Handle("/api/v1/", http.StripPrefix("/api/v1", wrapper))
+
+        log.Println("Backend listening on :8080")
+        log.Fatal(http.ListenAndServe(":8080", nil))
+}</span>
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">// pkg/calculator/calculator.go
+package calculator
+
+import (
+        "errors"
+        "math"
+)
+
+var (
+        ErrDivisionByZero = errors.New("division by zero")
+        ErrInvalidOp      = errors.New("invalid operation")
+        ErrSqrtNegative   = errors.New("square root of negative number")
+        ErrOverflow       = errors.New("overflow")
+)
+
+func Calculate(operator string, operand1, operand2 float64) (float64, error) <span class="cov8" title="1">{
+        var result float64
+
+        switch operator </span>{
+        case "add":<span class="cov8" title="1">
+                result = operand1 + operand2</span>
+        case "subtract":<span class="cov8" title="1">
+                result = operand1 - operand2</span>
+        case "multiply":<span class="cov8" title="1">
+                result = operand1 * operand2</span>
+        case "divide":<span class="cov8" title="1">
+                if operand2 == 0 </span><span class="cov8" title="1">{
+                        return 0, ErrDivisionByZero
+                }</span>
+                <span class="cov8" title="1">result = operand1 / operand2</span>
+        case "pow":<span class="cov8" title="1">
+                result = math.Pow(operand1, operand2)</span>
+        case "sqrt":<span class="cov8" title="1">
+                if operand1 &lt; 0 </span><span class="cov8" title="1">{
+                        return 0, ErrSqrtNegative
+                }</span>
+                <span class="cov8" title="1">result = math.Sqrt(operand1)</span>
+        case "percent":<span class="cov8" title="1">
+                result = (operand1 / 100) * operand2</span>
+        default:<span class="cov8" title="1">
+                return 0, ErrInvalidOp</span>
+        }
+
+        // Overflow / NaN check
+        <span class="cov8" title="1">if math.IsInf(result, 0) || math.IsNaN(result) </span><span class="cov8" title="1">{
+                return 0, ErrOverflow
+        }</span>
+
+        // Round to 15 decimal places to avoid floating‑point noise
+        <span class="cov8" title="1">return round(result, 15), nil</span>
+}
+
+func round(value float64, decimals int) float64 <span class="cov8" title="1">{
+        pow := math.Pow(10, float64(decimals))
+        return math.Round(value*pow) / pow
+}</span>
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

@@ -1,0 +1,29 @@
+# Go binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+
+# Go coverage raw data (we don't commit the binary .out file)
+backend/coverage.out
+
+# Node
+node_modules/
+dist/
+
+# Vite environment files (keep .env.example)
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+#Postman
+postman/
+.postman/
