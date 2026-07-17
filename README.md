@@ -264,5 +264,5 @@ The development process was assisted by an AI tool. The following list summarise
 
 A complete, detailed list of all prompts is available in `PROMPTS.md`.
 
-- **Backend coverage:** [backend/coverage.html](backend/coverage.html)
-- **Frontend coverage:** [frontend/coverage/index.html](frontend/coverage/index.html)
+- **Backend coverage:** [backend/coverage.html](https://gutierrezcarlos-eng.github.io/calculator-app/backend/coverage.html)
+- **Frontend coverage:** [frontend/coverage/index.html](https://gutierrezcarlos-eng.github.io/calculator-app/frontend/coverage/index.html)
