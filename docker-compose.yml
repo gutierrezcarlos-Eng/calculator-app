@@ -1,0 +1,16 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE: ""
+        VITE_API_PREFIX: /api/v1
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
